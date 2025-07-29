@@ -49,4 +49,18 @@ public class ClienteController {
         clienteService.deleteCliente(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<ClienteDTO>> autocomplete(
+            @RequestParam String term,
+            @RequestParam String field
+    ) {
+        if (!List.of("nome", "cognome", "email", "telefono").contains(field)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<ClienteDTO> risultati = clienteService.autocompleteClienti(term, field);
+        return ResponseEntity.ok(risultati);
+    }
+
 }

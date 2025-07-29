@@ -18,4 +18,15 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     @Query("SELECT new com.esempio.prenotazioni.dto.ClienteDTO(c.id, c.nome, c.cognome, c.email, c.telefono) FROM Cliente c WHERE c.id = :id")
     Optional<ClienteDTO> findClienteDTOById(Long id);
+    
+    @Query("""
+    	    SELECT new com.esempio.prenotazioni.dto.ClienteDTO(c.id, c.nome, c.cognome, c.email, c.telefono)
+    	    FROM Cliente c
+    	    WHERE 
+    	      (:field = 'nome' AND LOWER(c.nome) LIKE LOWER(CONCAT(:term, '%'))) OR
+    	      (:field = 'cognome' AND LOWER(c.cognome) LIKE LOWER(CONCAT(:term, '%'))) OR
+    	      (:field = 'email' AND LOWER(c.email) LIKE LOWER(CONCAT(:term, '%'))) OR
+    	      (:field = 'telefono' AND LOWER(c.telefono) LIKE LOWER(CONCAT(:term, '%')))
+    	""")
+    	List<ClienteDTO> autocompleteClienti(String term, String field);
 }

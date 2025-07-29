@@ -49,4 +49,9 @@ public class ClienteService {
     public void deleteCliente(Long id) {
         clienteRepo.deleteById(id);
     }
+    
+    public List<ClienteDTO> autocompleteClienti(String term, String field) {
+        return clienteRepo.autocompleteClienti(term, field);
+    }
+
 }
