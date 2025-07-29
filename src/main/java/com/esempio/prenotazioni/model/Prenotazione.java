@@ -15,12 +15,11 @@ public class Prenotazione {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private LocalDate giorno;
+    private LocalTime ora;
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
-
-    private LocalDate giorno;
-    private LocalTime ora;
-    private String note;
 }

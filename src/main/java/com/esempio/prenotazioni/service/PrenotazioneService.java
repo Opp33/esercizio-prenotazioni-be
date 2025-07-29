@@ -1,5 +1,6 @@
 package com.esempio.prenotazioni.service;
 
+import com.esempio.prenotazioni.dto.ClienteDTO;
 import com.esempio.prenotazioni.dto.PrenotazioneClienteDTO;
 import com.esempio.prenotazioni.model.Prenotazione;
 import com.esempio.prenotazioni.model.Cliente;
@@ -28,46 +29,39 @@ public class PrenotazioneService {
 
     public Optional<PrenotazioneClienteDTO> getPrenotazioneById(Long id) {
         return prenotazioneRepo.findById(id).map(p -> {
-            Cliente u = p.getCliente();
+            Cliente c = p.getCliente();
+            ClienteDTO clienteDTO = new ClienteDTO(c.getId(), c.getNome(), c.getCognome(), c.getEmail(), c.getTelefono());
+
             return new PrenotazioneClienteDTO(
-                p.getId(), p.getGiorno(), p.getOra(), p.getNote(),
-                u.getId(), u.getNome(), u.getCognome(), u.getEmail(), u.getTelefono()
+                p.getId(), p.getGiorno(), p.getOra(), p.getNote(), clienteDTO
             );
         });
     }
 
     @Transactional
     public PrenotazioneClienteDTO createOrUpdatePrenotazione(PrenotazioneClienteDTO dto) {
+        ClienteDTO cdto = dto.getCliente();
         Cliente cliente;
 
-        // Cerca cliente esistente per email
-        Optional<Cliente> clienteOpt = clienteRepo.findByEmail(dto.getEmail());
+        Optional<Cliente> clienteOpt = clienteRepo.findByTelefono(cdto.getTelefono());
 
         if (clienteOpt.isPresent()) {
             cliente = clienteOpt.get();
-            // Se vuoi aggiornare i dati cliente (opzionale)
-            cliente.setNome(dto.getNome());
-            cliente.setCognome(dto.getCognome());
-            cliente.setTelefono(dto.getTelefono());
+
         } else {
-            // Nuovo cliente
             cliente = new Cliente();
-            cliente.setNome(dto.getNome());
-            cliente.setCognome(dto.getCognome());
-            cliente.setEmail(dto.getEmail());
-            cliente.setTelefono(dto.getTelefono());
+            cliente.setNome(cdto.getNome());
+            cliente.setCognome(cdto.getCognome());
+            cliente.setEmail(cdto.getEmail());
+            cliente.setTelefono(cdto.getTelefono());
         }
 
-        cliente = clienteRepo.save(cliente); // fa update o insert a seconda dei casi
+        cliente = clienteRepo.save(cliente);
 
-        Prenotazione prenotazione;
-
-        if (dto.getPrenotazioneId() != null) {
-            prenotazione = prenotazioneRepo.findById(dto.getPrenotazioneId())
-                    .orElseThrow(() -> new RuntimeException("Prenotazione non trovata"));
-        } else {
-            prenotazione = new Prenotazione();
-        }
+        Prenotazione prenotazione = (dto.getPrenotazioneId() != null)
+            ? prenotazioneRepo.findById(dto.getPrenotazioneId())
+                  .orElseThrow(() -> new RuntimeException("Prenotazione non trovata"))
+            : new Prenotazione();
 
         prenotazione.setCliente(cliente);
         prenotazione.setGiorno(dto.getGiorno());
@@ -76,11 +70,12 @@ public class PrenotazioneService {
 
         prenotazione = prenotazioneRepo.save(prenotazione);
 
+        ClienteDTO nuovoClienteDTO = new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getCognome(), cliente.getEmail(), cliente.getTelefono());
         return new PrenotazioneClienteDTO(
-                prenotazione.getId(), prenotazione.getGiorno(), prenotazione.getOra(), prenotazione.getNote(),
-                cliente.getId(), cliente.getNome(), cliente.getCognome(), cliente.getEmail(), cliente.getTelefono()
+            prenotazione.getId(), prenotazione.getGiorno(), prenotazione.getOra(), prenotazione.getNote(), nuovoClienteDTO
         );
     }
+
 
 
     public void deletePrenotazione(Long id) {

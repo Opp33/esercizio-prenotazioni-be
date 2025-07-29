@@ -41,8 +41,8 @@ public class ClienteService {
         cliente.setEmail(dto.getEmail());
         cliente.setTelefono(dto.getTelefono());
 
-        Cliente savedcliente = clienteRepo.save(cliente);
-        return new ClienteDTO(savedcliente.getId(), savedcliente.getNome(), savedcliente.getCognome(), savedcliente.getEmail(), savedcliente.getTelefono());
+        Cliente savedCliente = clienteRepo.save(cliente);
+        return new ClienteDTO(savedCliente.getId(), savedCliente.getNome(), savedCliente.getCognome(), savedCliente.getEmail(), savedCliente.getTelefono());
     }
 
     @Transactional

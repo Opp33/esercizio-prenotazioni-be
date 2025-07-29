@@ -9,9 +9,14 @@ import java.util.List;
 
 public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long> {
 
-    @Query("SELECT new com.esempio.prenotazioni.dto.PrenotazioneClienteDTO(" +
-           "p.id, p.giorno, p.ora, p.note, " +
-           "c.id, c.nome, c.cognome, c.email, c.telefono) " +
-           "FROM Prenotazione p JOIN p.cliente c")
-    List<PrenotazioneClienteDTO> findAllWithCliente();
+	@Query("""
+		    SELECT new com.esempio.prenotazioni.dto.PrenotazioneClienteDTO(
+		        p.id, p.giorno, p.ora, p.note,
+		        new com.esempio.prenotazioni.dto.ClienteDTO(
+		            c.id, c.nome, c.cognome, c.email, c.telefono
+		        )
+		    )
+		    FROM Prenotazione p JOIN p.cliente c
+		""")
+		List<PrenotazioneClienteDTO> findAllWithCliente();
 }

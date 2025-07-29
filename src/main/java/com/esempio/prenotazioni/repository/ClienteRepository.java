@@ -11,7 +11,7 @@ import com.esempio.prenotazioni.dto.ClienteDTO;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
-	Optional<Cliente> findByEmail(String email);
+	Optional<Cliente> findByTelefono(String telefono);
 
     @Query("SELECT new com.esempio.prenotazioni.dto.ClienteDTO(c.id, c.nome, c.cognome, c.email, c.telefono) FROM Cliente c")
     List<ClienteDTO> findAllClientiDTO();
