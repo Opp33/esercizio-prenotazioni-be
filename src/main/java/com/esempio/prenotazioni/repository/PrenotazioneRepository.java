@@ -16,7 +16,7 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
 		            c.id, c.nome, c.cognome, c.email, c.telefono
 		        )
 		    )
-		    FROM Prenotazione p JOIN p.cliente c
+		    FROM Prenotazione p JOIN p.cliente c ORDER BY p.giorno ASC, p.ora ASC
 		""")
 		List<PrenotazioneClienteDTO> findAllWithCliente();
 }

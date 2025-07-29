@@ -13,7 +13,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
 	Optional<Cliente> findByTelefono(String telefono);
 
-    @Query("SELECT new com.esempio.prenotazioni.dto.ClienteDTO(c.id, c.nome, c.cognome, c.email, c.telefono) FROM Cliente c")
+    @Query("SELECT new com.esempio.prenotazioni.dto.ClienteDTO(c.id, c.nome, c.cognome, c.email, c.telefono) FROM Cliente c ORDER BY c.cognome ASC")
     List<ClienteDTO> findAllClientiDTO();
 
     @Query("SELECT new com.esempio.prenotazioni.dto.ClienteDTO(c.id, c.nome, c.cognome, c.email, c.telefono) FROM Cliente c WHERE c.id = :id")
