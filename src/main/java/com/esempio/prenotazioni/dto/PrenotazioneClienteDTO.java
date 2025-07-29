@@ -8,25 +8,25 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PrenotazioneUtenteDTO {
+public class PrenotazioneClienteDTO {
     private Long prenotazioneId;
     private LocalDate giorno;
     private LocalTime ora;
     private String note;
 
-    private Long utenteId;
+    private Long clienteId;
     private String nome;
     private String cognome;
     private String email;
     private String telefono;
 
-    public PrenotazioneUtenteDTO(Long prenotazioneId, LocalDate giorno, LocalTime ora, String note,
-                                 Long utenteId, String nome, String cognome, String email, String telefono) {
+    public PrenotazioneClienteDTO(Long prenotazioneId, LocalDate giorno, LocalTime ora, String note,
+                                 Long clienteId, String nome, String cognome, String email, String telefono) {
         this.prenotazioneId = prenotazioneId;
         this.giorno = giorno;
         this.ora = ora;
         this.note = note;
-        this.utenteId = utenteId;
+        this.clienteId = clienteId;
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;

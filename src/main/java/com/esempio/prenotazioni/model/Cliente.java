@@ -7,10 +7,10 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name = "utenti")
+@Table(name = "clienti")
 @Getter
 @Setter
-public class Utente {
+public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +20,6 @@ public class Utente {
     private String email;
     private String telefono;
 
-    @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Prenotazione> prenotazioni;
 }

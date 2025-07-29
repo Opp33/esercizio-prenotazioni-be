@@ -17,8 +17,8 @@ public class Prenotazione {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "utente_id", nullable = false)
-    private Utente utente;
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
 
     private LocalDate giorno;
     private LocalTime ora;

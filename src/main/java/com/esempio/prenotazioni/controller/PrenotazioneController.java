@@ -1,6 +1,6 @@
 package com.esempio.prenotazioni.controller;
 
-import com.esempio.prenotazioni.dto.PrenotazioneUtenteDTO;
+import com.esempio.prenotazioni.dto.PrenotazioneClienteDTO;
 import com.esempio.prenotazioni.service.PrenotazioneService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,28 +19,28 @@ public class PrenotazioneController {
     }
 
     @GetMapping
-    public List<PrenotazioneUtenteDTO> getAll() {
+    public List<PrenotazioneClienteDTO> getAll() {
         return service.getAllPrenotazioni();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PrenotazioneUtenteDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<PrenotazioneClienteDTO> getById(@PathVariable Long id) {
         return service.getPrenotazioneById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<PrenotazioneUtenteDTO> create(@RequestBody PrenotazioneUtenteDTO dto) {
-        PrenotazioneUtenteDTO created = service.createOrUpdatePrenotazione(dto);
+    public ResponseEntity<PrenotazioneClienteDTO> create(@RequestBody PrenotazioneClienteDTO dto) {
+        PrenotazioneClienteDTO created = service.createOrUpdatePrenotazione(dto);
         return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PrenotazioneUtenteDTO> update(@PathVariable Long id,
-                                                        @RequestBody PrenotazioneUtenteDTO dto) {
+    public ResponseEntity<PrenotazioneClienteDTO> update(@PathVariable Long id,
+                                                        @RequestBody PrenotazioneClienteDTO dto) {
         dto.setPrenotazioneId(id);
-        PrenotazioneUtenteDTO updated = service.createOrUpdatePrenotazione(dto);
+        PrenotazioneClienteDTO updated = service.createOrUpdatePrenotazione(dto);
         return ResponseEntity.ok(updated);
     }
 

@@ -1,10 +1,10 @@
 package com.esempio.prenotazioni.service;
 
-import com.esempio.prenotazioni.dto.PrenotazioneUtenteDTO;
+import com.esempio.prenotazioni.dto.PrenotazioneClienteDTO;
 import com.esempio.prenotazioni.model.Prenotazione;
-import com.esempio.prenotazioni.model.Utente;
+import com.esempio.prenotazioni.model.Cliente;
 import com.esempio.prenotazioni.repository.PrenotazioneRepository;
-import com.esempio.prenotazioni.repository.UtenteRepository;
+import com.esempio.prenotazioni.repository.ClienteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,21 +15,21 @@ import java.util.Optional;
 public class PrenotazioneService {
 
     private final PrenotazioneRepository prenotazioneRepo;
-    private final UtenteRepository utenteRepo;
+    private final ClienteRepository clienteRepo;
 
-    public PrenotazioneService(PrenotazioneRepository prenotazioneRepo, UtenteRepository utenteRepo) {
+    public PrenotazioneService(PrenotazioneRepository prenotazioneRepo, ClienteRepository clienteRepo) {
         this.prenotazioneRepo = prenotazioneRepo;
-        this.utenteRepo = utenteRepo;
+        this.clienteRepo = clienteRepo;
     }
 
-    public List<PrenotazioneUtenteDTO> getAllPrenotazioni() {
-        return prenotazioneRepo.findAllWithUtente();
+    public List<PrenotazioneClienteDTO> getAllPrenotazioni() {
+        return prenotazioneRepo.findAllWithCliente();
     }
 
-    public Optional<PrenotazioneUtenteDTO> getPrenotazioneById(Long id) {
+    public Optional<PrenotazioneClienteDTO> getPrenotazioneById(Long id) {
         return prenotazioneRepo.findById(id).map(p -> {
-            Utente u = p.getUtente();
-            return new PrenotazioneUtenteDTO(
+            Cliente u = p.getCliente();
+            return new PrenotazioneClienteDTO(
                 p.getId(), p.getGiorno(), p.getOra(), p.getNote(),
                 u.getId(), u.getNome(), u.getCognome(), u.getEmail(), u.getTelefono()
             );
@@ -37,28 +37,28 @@ public class PrenotazioneService {
     }
 
     @Transactional
-    public PrenotazioneUtenteDTO createOrUpdatePrenotazione(PrenotazioneUtenteDTO dto) {
-        Utente utente;
+    public PrenotazioneClienteDTO createOrUpdatePrenotazione(PrenotazioneClienteDTO dto) {
+        Cliente cliente;
 
-        // Cerca utente esistente per email
-        Optional<Utente> utenteOpt = utenteRepo.findByEmail(dto.getEmail());
+        // Cerca cliente esistente per email
+        Optional<Cliente> clienteOpt = clienteRepo.findByEmail(dto.getEmail());
 
-        if (utenteOpt.isPresent()) {
-            utente = utenteOpt.get();
-            // Se vuoi aggiornare i dati utente (opzionale)
-            utente.setNome(dto.getNome());
-            utente.setCognome(dto.getCognome());
-            utente.setTelefono(dto.getTelefono());
+        if (clienteOpt.isPresent()) {
+            cliente = clienteOpt.get();
+            // Se vuoi aggiornare i dati cliente (opzionale)
+            cliente.setNome(dto.getNome());
+            cliente.setCognome(dto.getCognome());
+            cliente.setTelefono(dto.getTelefono());
         } else {
-            // Nuovo utente
-            utente = new Utente();
-            utente.setNome(dto.getNome());
-            utente.setCognome(dto.getCognome());
-            utente.setEmail(dto.getEmail());
-            utente.setTelefono(dto.getTelefono());
+            // Nuovo cliente
+            cliente = new Cliente();
+            cliente.setNome(dto.getNome());
+            cliente.setCognome(dto.getCognome());
+            cliente.setEmail(dto.getEmail());
+            cliente.setTelefono(dto.getTelefono());
         }
 
-        utente = utenteRepo.save(utente); // fa update o insert a seconda dei casi
+        cliente = clienteRepo.save(cliente); // fa update o insert a seconda dei casi
 
         Prenotazione prenotazione;
 
@@ -69,16 +69,16 @@ public class PrenotazioneService {
             prenotazione = new Prenotazione();
         }
 
-        prenotazione.setUtente(utente);
+        prenotazione.setCliente(cliente);
         prenotazione.setGiorno(dto.getGiorno());
         prenotazione.setOra(dto.getOra());
         prenotazione.setNote(dto.getNote());
 
         prenotazione = prenotazioneRepo.save(prenotazione);
 
-        return new PrenotazioneUtenteDTO(
+        return new PrenotazioneClienteDTO(
                 prenotazione.getId(), prenotazione.getGiorno(), prenotazione.getOra(), prenotazione.getNote(),
-                utente.getId(), utente.getNome(), utente.getCognome(), utente.getEmail(), utente.getTelefono()
+                cliente.getId(), cliente.getNome(), cliente.getCognome(), cliente.getEmail(), cliente.getTelefono()
         );
     }
 
