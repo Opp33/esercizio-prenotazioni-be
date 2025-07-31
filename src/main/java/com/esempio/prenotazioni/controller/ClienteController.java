@@ -13,53 +13,52 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ClienteController {
 
-    private final ClienteService clienteService;
+    private final ClienteService service;
 
-    public ClienteController(ClienteService clienteService) {
-        this.clienteService = clienteService;
+    public ClienteController(ClienteService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<ClienteDTO> getAll() {
-        return clienteService.getAllClienti();
+        return service.getAllClienti();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> getById(@PathVariable Long id) {
-        return clienteService.getClienteById(id)
+        return service.getClienteById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<ClienteDTO> create(@RequestBody ClienteDTO dto) {
-        ClienteDTO created = clienteService.createOrUpdateCliente(dto);
+        ClienteDTO created = service.createOrUpdateCliente(dto);
         return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ClienteDTO> update(@PathVariable Long id, @RequestBody ClienteDTO dto) {
         dto.setClienteId(id);
-        ClienteDTO updated = clienteService.createOrUpdateCliente(dto);
+        ClienteDTO updated = service.createOrUpdateCliente(dto);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        clienteService.deleteCliente(id);
+        service.deleteCliente(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/autocomplete")
     public ResponseEntity<List<ClienteDTO>> autocomplete(
             @RequestParam String term,
-            @RequestParam String field
-    ) {
+            @RequestParam String field) {
         if (!List.of("nome", "cognome", "email", "telefono").contains(field)) {
             return ResponseEntity.badRequest().build();
         }
 
-        List<ClienteDTO> risultati = clienteService.autocompleteClienti(term, field);
+        List<ClienteDTO> risultati = service.autocompleteClienti(term, field);
         return ResponseEntity.ok(risultati);
     }
 

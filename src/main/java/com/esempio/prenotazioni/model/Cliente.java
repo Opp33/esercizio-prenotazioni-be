@@ -11,14 +11,20 @@ import java.util.List;
 @Getter
 @Setter
 public class Cliente {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false) 
     private String nome;
-    private String cognome;
-    private String email;
     
-    @Column(unique = true)
+    @Column(nullable = false) 
+    private String cognome;
+
+    private String email;
+
+    @Column(nullable = false, unique = true)
     private String telefono;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -12,11 +12,17 @@ import java.time.LocalTime;
 @Getter
 @Setter
 public class Prenotazione {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private LocalDate giorno;
+
+    @Column(nullable = false)
     private LocalTime ora;
+
     private String note;
 
     @ManyToOne

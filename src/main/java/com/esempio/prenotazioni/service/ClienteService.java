@@ -12,46 +12,43 @@ import java.util.Optional;
 @Service
 public class ClienteService {
 
-    private final ClienteRepository clienteRepo;
+    private final ClienteRepository repo;
 
-    public ClienteService(ClienteRepository clienteRepo) {
-        this.clienteRepo = clienteRepo;
+    public ClienteService(ClienteRepository repo) {
+        this.repo = repo;
     }
 
     public List<ClienteDTO> getAllClienti() {
-        return clienteRepo.findAllClientiDTO();
+        return repo.findAllClientiDTO();
     }
 
     public Optional<ClienteDTO> getClienteById(Long id) {
-        return clienteRepo.findClienteDTOById(id);
+        return repo.findClienteDTOById(id);
     }
 
     @Transactional
     public ClienteDTO createOrUpdateCliente(ClienteDTO dto) {
-        Cliente cliente;
-        if (dto.getClienteId() != null) {
-            cliente = clienteRepo.findById(dto.getClienteId())
-                    .orElseThrow(() -> new RuntimeException("cliente non trovato con ID: " + dto.getClienteId()));
-        } else {
-            cliente = new Cliente();
-        }
+        Cliente c = (dto.getClienteId() != null)
+                ? repo.findById(dto.getClienteId())
+                      .orElseThrow(() -> new RuntimeException("Cliente non trovato con ID: " + dto.getClienteId()))
+                : new Cliente();
 
-        cliente.setNome(dto.getNome());
-        cliente.setCognome(dto.getCognome());
-        cliente.setEmail(dto.getEmail());
-        cliente.setTelefono(dto.getTelefono());
+        c.setNome(dto.getNome());
+        c.setCognome(dto.getCognome());
+        c.setEmail(dto.getEmail());
+        c.setTelefono(dto.getTelefono());
 
-        Cliente savedCliente = clienteRepo.save(cliente);
-        return new ClienteDTO(savedCliente.getId(), savedCliente.getNome(), savedCliente.getCognome(), savedCliente.getEmail(), savedCliente.getTelefono());
+        Cliente saved = repo.save(c);
+        return new ClienteDTO(saved.getId(), saved.getNome(), saved.getCognome(),
+                              saved.getEmail(), saved.getTelefono());
     }
 
     @Transactional
     public void deleteCliente(Long id) {
-        clienteRepo.deleteById(id);
-    }
-    
-    public List<ClienteDTO> autocompleteClienti(String term, String field) {
-        return clienteRepo.autocompleteClienti(term, field);
+        repo.deleteById(id);
     }
 
+    public List<ClienteDTO> autocompleteClienti(String term, String field) {
+        return repo.autocompleteClienti(term, field);
+    }
 }

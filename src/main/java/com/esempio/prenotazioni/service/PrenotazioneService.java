@@ -15,70 +15,64 @@ import java.util.Optional;
 @Service
 public class PrenotazioneService {
 
-    private final PrenotazioneRepository prenotazioneRepo;
-    private final ClienteRepository clienteRepo;
+    private final PrenotazioneRepository prenRepo;
+    private final ClienteRepository cliRepo;
 
-    public PrenotazioneService(PrenotazioneRepository prenotazioneRepo, ClienteRepository clienteRepo) {
-        this.prenotazioneRepo = prenotazioneRepo;
-        this.clienteRepo = clienteRepo;
+    public PrenotazioneService(PrenotazioneRepository prenRepo, ClienteRepository cliRepo) {
+        this.prenRepo = prenRepo;
+        this.cliRepo = cliRepo;
     }
 
     public List<PrenotazioneClienteDTO> getAllPrenotazioni() {
-        return prenotazioneRepo.findAllWithCliente();
+        return prenRepo.findAllWithCliente();
     }
 
     public Optional<PrenotazioneClienteDTO> getPrenotazioneById(Long id) {
-        return prenotazioneRepo.findById(id).map(p -> {
+        return prenRepo.findById(id).map(p -> {
             Cliente c = p.getCliente();
-            ClienteDTO clienteDTO = new ClienteDTO(c.getId(), c.getNome(), c.getCognome(), c.getEmail(), c.getTelefono());
+            ClienteDTO cDto = new ClienteDTO(c.getId(), c.getNome(), c.getCognome(), c.getEmail(),
+                    c.getTelefono());
 
             return new PrenotazioneClienteDTO(
-                p.getId(), p.getGiorno(), p.getOra(), p.getNote(), clienteDTO
-            );
+                    p.getId(), p.getGiorno(), p.getOra(), p.getNote(), cDto);
         });
     }
 
     @Transactional
     public PrenotazioneClienteDTO createOrUpdatePrenotazione(PrenotazioneClienteDTO dto) {
-        ClienteDTO cdto = dto.getCliente();
-        Cliente cliente;
+        ClienteDTO cDto = dto.getCliente();
 
-        Optional<Cliente> clienteOpt = clienteRepo.findByTelefono(cdto.getTelefono());
+        Cliente cliente = cliRepo.findByTelefono(cDto.getTelefono()).orElseGet(() -> {
+            Cliente nuovo = new Cliente();
+            nuovo.setNome(cDto.getNome());
+            nuovo.setCognome(cDto.getCognome());
+            nuovo.setEmail(cDto.getEmail());
+            nuovo.setTelefono(cDto.getTelefono());
+            return cliRepo.save(nuovo);
+        });
 
-        if (clienteOpt.isPresent()) {
-            cliente = clienteOpt.get();
+        Prenotazione pren = (dto.getPrenotazioneId() != null)
+                ? prenRepo.findById(dto.getPrenotazioneId())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Prenotazione non trovata con ID: " + dto.getPrenotazioneId()))
+                : new Prenotazione();
 
-        } else {
-            cliente = new Cliente();
-            cliente.setNome(cdto.getNome());
-            cliente.setCognome(cdto.getCognome());
-            cliente.setEmail(cdto.getEmail());
-            cliente.setTelefono(cdto.getTelefono());
-        }
+        pren.setCliente(cliente);
+        pren.setGiorno(dto.getGiorno());
+        pren.setOra(dto.getOra());
+        pren.setNote(dto.getNote());
 
-        cliente = clienteRepo.save(cliente);
+        Prenotazione saved = prenRepo.save(pren);
 
-        Prenotazione prenotazione = (dto.getPrenotazioneId() != null)
-            ? prenotazioneRepo.findById(dto.getPrenotazioneId())
-                  .orElseThrow(() -> new RuntimeException("Prenotazione non trovata"))
-            : new Prenotazione();
-
-        prenotazione.setCliente(cliente);
-        prenotazione.setGiorno(dto.getGiorno());
-        prenotazione.setOra(dto.getOra());
-        prenotazione.setNote(dto.getNote());
-
-        prenotazione = prenotazioneRepo.save(prenotazione);
-
-        ClienteDTO nuovoClienteDTO = new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getCognome(), cliente.getEmail(), cliente.getTelefono());
-        return new PrenotazioneClienteDTO(
-            prenotazione.getId(), prenotazione.getGiorno(), prenotazione.getOra(), prenotazione.getNote(), nuovoClienteDTO
-        );
+        ClienteDTO clienteDTO = new ClienteDTO(cliente.getId(), cliente.getNome(),
+                cliente.getCognome(), cliente.getEmail(),
+                cliente.getTelefono());
+        return new PrenotazioneClienteDTO(saved.getId(), saved.getGiorno(),
+                saved.getOra(), saved.getNote(), clienteDTO);
     }
 
-
-
+    @Transactional
     public void deletePrenotazione(Long id) {
-        prenotazioneRepo.deleteById(id);
+        prenRepo.deleteById(id);
     }
 }

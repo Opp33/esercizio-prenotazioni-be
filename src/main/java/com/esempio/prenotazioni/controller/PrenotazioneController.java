@@ -38,7 +38,7 @@ public class PrenotazioneController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PrenotazioneClienteDTO> update(@PathVariable Long id,
-                                                        @RequestBody PrenotazioneClienteDTO dto) {
+            @RequestBody PrenotazioneClienteDTO dto) {
         dto.setPrenotazioneId(id);
         PrenotazioneClienteDTO updated = service.createOrUpdatePrenotazione(dto);
         return ResponseEntity.ok(updated);
